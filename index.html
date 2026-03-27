@@ -25,7 +25,7 @@
 
         .app-header {
             background: white;
-            padding: max(env(safe-area-inset-top), 12px) 16px 12px;
+            padding: max(env(safe-area-inset-top), 16px) 20px 16px;
             border-bottom: 1px solid #e5e7eb;
         }
 
@@ -33,7 +33,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 12px;
+            max-width: 1400px;
+            margin: 0 auto;
         }
 
         .app-title {
@@ -51,34 +52,7 @@
             font-size: 0.875rem;
             color: #6b7280;
             font-family: 'Courier New', monospace;
-        }
-
-        .stats-bar {
-            background: #2563eb;
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            padding: 12px 8px;
-            gap: 8px;
-            margin: -12px -16px 0;
-        }
-
-        .stat-item {
-            text-align: center;
-        }
-
-        .stat-label {
-            font-size: 0.7rem;
-            color: rgba(255,255,255,0.8);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 4px;
-        }
-
-        .stat-value {
-            font-size: 1.25rem;
-            color: white;
-            font-weight: 600;
-            font-family: 'Courier New', monospace;
+            text-align: right;
         }
 
         .tabs {
@@ -86,10 +60,20 @@
             background: white;
             border-bottom: 1px solid #e5e7eb;
             overflow-x: auto;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .tabs-inner {
+            display: flex;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
         }
 
         .tab {
-            padding: 16px 20px;
+            padding: 16px 24px;
             font-size: 0.875rem;
             color: #6b7280;
             border: none;
@@ -106,14 +90,64 @@
             border-bottom-color: #2563eb;
         }
 
+        .tab:hover {
+            color: #2563eb;
+            background: #f9fafb;
+        }
+
         .tab-content {
             display: none;
-            padding: 16px;
+            padding: 20px;
             padding-bottom: 80px;
+            max-width: 1400px;
+            margin: 0 auto;
         }
 
         .tab-content.active {
             display: block;
+        }
+
+        /* Desktop optimizations */
+        @media (min-width: 768px) {
+            .tab-content {
+                padding: 32px;
+            }
+
+            .size-grid {
+                grid-template-columns: repeat(6, 1fr);
+                gap: 12px;
+            }
+
+            .button-group {
+                grid-template-columns: repeat(3, 1fr);
+                max-width: 600px;
+            }
+
+            .share-grid {
+                max-width: 400px;
+            }
+
+            .shoe-card {
+                max-width: 100%;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .size-grid {
+                grid-template-columns: repeat(8, 1fr);
+            }
+
+            .app-header {
+                padding: 20px 40px;
+            }
+
+            .tab-content {
+                padding: 40px;
+            }
+
+            .input-group input {
+                max-width: 400px;
+            }
         }
 
         .section {
@@ -207,6 +241,11 @@
             margin-bottom: 12px;
             overflow: hidden;
             box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            position: relative;
+        }
+
+        .shoe-card.completed {
+            border: 2px solid #10b981;
         }
 
         .shoe-card-header {
@@ -215,6 +254,66 @@
             font-weight: 600;
             color: #1e40af;
             font-size: 0.95rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .shoe-card-header.completed {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .completion-badge {
+            font-size: 0.75rem;
+            padding: 4px 10px;
+            border-radius: 12px;
+            background: #10b981;
+            color: white;
+            font-weight: 600;
+            display: none;
+        }
+
+        .shoe-card.completed .completion-badge {
+            display: inline-block;
+        }
+
+        .save-group-btn {
+            width: 100%;
+            padding: 12px 16px;
+            margin: 16px 16px 16px;
+            border: 2px solid #2563eb;
+            background: white;
+            color: #2563eb;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .save-group-btn:active {
+            transform: scale(0.98);
+        }
+
+        .save-group-btn.completed {
+            background: #10b981;
+            color: white;
+            border-color: #10b981;
+        }
+
+        .save-group-btn:hover {
+            background: #2563eb;
+            color: white;
+        }
+
+        .save-group-btn.completed:hover {
+            background: #059669;
+            border-color: #059669;
         }
 
         .size-grid {
@@ -251,6 +350,17 @@
             font-family: 'Courier New', monospace;
             background: white;
             transition: all 0.2s;
+        }
+
+        /* Remove number input arrows */
+        .size-input::-webkit-outer-spin-button,
+        .size-input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .size-input[type=number] {
+            -moz-appearance: textfield;
         }
 
         .size-input:focus {
@@ -464,28 +574,19 @@
     <div class="app-header">
         <div class="header-top">
             <h1 class="app-title">SR <span>Shoes</span> <span style="color: #6b7280; font-weight: 400; font-size: 1rem;">Inventory</span></h1>
-            <div class="header-date" id="headerDate">Fri, 27 Mar</div>
-        </div>
-        <div class="stats-bar">
-            <div class="stat-item">
-                <div class="stat-label">Items</div>
-                <div class="stat-value" id="totalItems">0</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-label">Stock</div>
-                <div class="stat-value" id="totalStock">0</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-label">Reorder</div>
-                <div class="stat-value" id="reorderCount">0</div>
+            <div>
+                <div id="saveIndicator" style="font-size: 0.75rem; color: #10b981; margin-bottom: 2px; opacity: 0; transition: opacity 0.3s;">✓ Saved</div>
+                <div class="header-date" id="headerDate">Fri, 27 Mar</div>
             </div>
         </div>
     </div>
 
     <div class="tabs">
-        <button class="tab active" onclick="switchTab('audit')">AUDIT</button>
-        <button class="tab" onclick="switchTab('stock')">STOCK SHEET</button>
-        <button class="tab" onclick="switchTab('reorder')">REORDER</button>
+        <div class="tabs-inner">
+            <button class="tab active" onclick="switchTab('audit')">AUDIT</button>
+            <button class="tab" onclick="switchTab('stock')">STOCK SHEET</button>
+            <button class="tab" onclick="switchTab('reorder')">REORDER</button>
+        </div>
     </div>
 
     <!-- AUDIT TAB -->
@@ -493,7 +594,7 @@
         <div class="section">
             <div class="input-group">
                 <label>Employee Name</label>
-                <input type="text" id="employeeName" placeholder="Enter your name">
+                <input type="text" id="employeeName" placeholder="Enter your name" oninput="saveData()">
             </div>
 
             <div class="button-group">
@@ -503,29 +604,59 @@
             <button class="btn btn-secondary" onclick="resetAll()" style="width: 100%;">🔄 Clear All</button>
         </div>
 
-        <div class="shoe-card">
-            <div class="shoe-card-header">🥾 GOLA (Black)</div>
+        <div class="shoe-card" id="card-gola-black">
+            <div class="shoe-card-header" id="header-gola-black">
+                <span>🥾 GOLA (Black)</span>
+                <span class="completion-badge">✓ Complete</span>
+            </div>
             <div class="size-grid" id="gola-black"></div>
+            <button class="save-group-btn" id="save-gola-black" onclick="markGroupComplete('gola-black', 'GOLA (Black)')">
+                ✓ Save & Mark Complete
+            </button>
         </div>
 
-        <div class="shoe-card">
-            <div class="shoe-card-header">🥾 GOLA (White)</div>
+        <div class="shoe-card" id="card-gola-white">
+            <div class="shoe-card-header" id="header-gola-white">
+                <span>🥾 GOLA (White)</span>
+                <span class="completion-badge">✓ Complete</span>
+            </div>
             <div class="size-grid" id="gola-white"></div>
+            <button class="save-group-btn" id="save-gola-white" onclick="markGroupComplete('gola-white', 'GOLA (White)')">
+                ✓ Save & Mark Complete
+            </button>
         </div>
 
-        <div class="shoe-card">
-            <div class="shoe-card-header">🥾 CANDY (Black)</div>
+        <div class="shoe-card" id="card-candy-black">
+            <div class="shoe-card-header" id="header-candy-black">
+                <span>🥾 CANDY (Black)</span>
+                <span class="completion-badge">✓ Complete</span>
+            </div>
             <div class="size-grid" id="candy-black"></div>
+            <button class="save-group-btn" id="save-candy-black" onclick="markGroupComplete('candy-black', 'CANDY (Black)')">
+                ✓ Save & Mark Complete
+            </button>
         </div>
 
-        <div class="shoe-card">
-            <div class="shoe-card-header">🥾 DERBY (Black)</div>
+        <div class="shoe-card" id="card-derby-black">
+            <div class="shoe-card-header" id="header-derby-black">
+                <span>🥾 DERBY (Black)</span>
+                <span class="completion-badge">✓ Complete</span>
+            </div>
             <div class="size-grid" id="derby-black"></div>
+            <button class="save-group-btn" id="save-derby-black" onclick="markGroupComplete('derby-black', 'DERBY (Black)')">
+                ✓ Save & Mark Complete
+            </button>
         </div>
 
-        <div class="shoe-card">
-            <div class="shoe-card-header">🥾 PT (White)</div>
+        <div class="shoe-card" id="card-pt-white">
+            <div class="shoe-card-header" id="header-pt-white">
+                <span>🥾 PT (White)</span>
+                <span class="completion-badge">✓ Complete</span>
+            </div>
             <div class="size-grid" id="pt-white"></div>
+            <button class="save-group-btn" id="save-pt-white" onclick="markGroupComplete('pt-white', 'PT (White)')">
+                ✓ Save & Mark Complete
+            </button>
         </div>
     </div>
 
@@ -553,6 +684,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             initializeGrid();
             updateHeaderDate();
+            loadData(); // Load saved data on startup
         });
 
         function updateHeaderDate() {
@@ -639,28 +771,145 @@
             }
             
             updateSummary();
+            saveData(); // Auto-save on every change
         }
 
-        function updateSummary() {
-            let totalItems = 0;
-            let totalStock = 0;
-            let reorderCount = 0;
+        function markGroupComplete(groupId, groupName) {
+            const card = document.getElementById(`card-${groupId}`);
+            const header = document.getElementById(`header-${groupId}`);
+            const button = document.getElementById(`save-${groupId}`);
+            
+            // Toggle completion state
+            const isCompleted = card.classList.contains('completed');
+            
+            if (!isCompleted) {
+                // Mark as complete
+                card.classList.add('completed');
+                header.classList.add('completed');
+                button.classList.add('completed');
+                button.innerHTML = '✓ Completed';
+                
+                // Save to localStorage
+                saveData();
+                
+                // Show confirmation
+                const indicator = document.getElementById('saveIndicator');
+                if (indicator) {
+                    indicator.textContent = `✓ ${groupName} Complete`;
+                    indicator.style.opacity = '1';
+                    setTimeout(() => {
+                        indicator.textContent = '✓ Saved';
+                        indicator.style.opacity = '0';
+                    }, 2000);
+                }
+            } else {
+                // Unmark completion
+                card.classList.remove('completed');
+                header.classList.remove('completed');
+                button.classList.remove('completed');
+                button.innerHTML = '✓ Save & Mark Complete';
+                saveData();
+            }
+        }
+
+        function saveData() {
+            const data = {
+                employeeName: document.getElementById('employeeName').value,
+                timestamp: new Date().toISOString(),
+                inventory: {},
+                completedGroups: []
+            };
 
             shoes.forEach(shoe => {
+                data.inventory[shoe.id] = {};
                 shoe.sizes.forEach(size => {
                     const input = document.getElementById(`${shoe.id}-${size}`);
                     if (input) {
-                        const qty = parseInt(input.value) || 0;
-                        totalItems++;
-                        totalStock += qty;
-                        if (qty < 2) reorderCount++;
+                        data.inventory[shoe.id][size] = parseInt(input.value) || 0;
                     }
                 });
+                
+                // Save completion status
+                const card = document.getElementById(`card-${shoe.id}`);
+                if (card && card.classList.contains('completed')) {
+                    data.completedGroups.push(shoe.id);
+                }
             });
 
-            document.getElementById('totalItems').textContent = totalItems;
-            document.getElementById('totalStock').textContent = totalStock;
-            document.getElementById('reorderCount').textContent = reorderCount;
+            localStorage.setItem('schoolShoesInventory', JSON.stringify(data));
+            
+            // Show save indicator
+            const indicator = document.getElementById('saveIndicator');
+            if (indicator && indicator.textContent === '✓ Saved') {
+                indicator.style.opacity = '1';
+                setTimeout(() => {
+                    indicator.style.opacity = '0';
+                }, 2000);
+            }
+        }
+
+        function loadData() {
+            const savedData = localStorage.getItem('schoolShoesInventory');
+            if (!savedData) return;
+
+            try {
+                const data = JSON.parse(savedData);
+                
+                // Load employee name
+                if (data.employeeName) {
+                    document.getElementById('employeeName').value = data.employeeName;
+                }
+
+                // Load inventory quantities
+                if (data.inventory) {
+                    shoes.forEach(shoe => {
+                        if (data.inventory[shoe.id]) {
+                            shoe.sizes.forEach(size => {
+                                const input = document.getElementById(`${shoe.id}-${size}`);
+                                if (input && data.inventory[shoe.id][size] !== undefined) {
+                                    input.value = data.inventory[shoe.id][size];
+                                    updateStatus(shoe.id, size);
+                                }
+                            });
+                        }
+                    });
+                }
+
+                // Load completion status
+                if (data.completedGroups) {
+                    data.completedGroups.forEach(groupId => {
+                        const card = document.getElementById(`card-${groupId}`);
+                        const header = document.getElementById(`header-${groupId}`);
+                        const button = document.getElementById(`save-${groupId}`);
+                        
+                        if (card && header && button) {
+                            card.classList.add('completed');
+                            header.classList.add('completed');
+                            button.classList.add('completed');
+                            button.innerHTML = '✓ Completed';
+                        }
+                    });
+                }
+
+                updateSummary();
+                
+                // Show notification if data was restored
+                if (data.timestamp) {
+                    const savedTime = new Date(data.timestamp);
+                    const minutesAgo = Math.round((new Date() - savedTime) / 60000);
+                    if (minutesAgo > 0) {
+                        setTimeout(() => {
+                            alert(`✅ Data restored from ${minutesAgo} minute${minutesAgo === 1 ? '' : 's'} ago`);
+                        }, 500);
+                    }
+                }
+            } catch (e) {
+                console.error('Error loading data:', e);
+            }
+        }
+
+        function updateSummary() {
+            // Summary now only shown in summary cards, not in header
         }
 
         function generateStockSheet() {
@@ -874,13 +1123,31 @@
         }
 
         function resetAll() {
-            if (confirm('Clear all stock data?')) {
+            if (confirm('Clear all stock data? This will delete saved data too.')) {
                 document.querySelectorAll('input[type="number"]').forEach(input => {
                     input.value = 0;
                     input.dispatchEvent(new Event('input'));
                 });
+                document.getElementById('employeeName').value = '';
+                
+                // Reset all completion status
+                shoes.forEach(shoe => {
+                    const card = document.getElementById(`card-${shoe.id}`);
+                    const header = document.getElementById(`header-${shoe.id}`);
+                    const button = document.getElementById(`save-${shoe.id}`);
+                    
+                    if (card) card.classList.remove('completed');
+                    if (header) header.classList.remove('completed');
+                    if (button) {
+                        button.classList.remove('completed');
+                        button.innerHTML = '✓ Save & Mark Complete';
+                    }
+                });
+                
+                localStorage.removeItem('schoolShoesInventory');
                 updateSummary();
                 switchTab('audit');
+                alert('✅ All data cleared');
             }
         }
 
