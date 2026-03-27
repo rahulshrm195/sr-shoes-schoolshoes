@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#2563eb">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="School Shoes">
+    <title>School Shoes Inventory</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f3f4f6;
+            color: #1f2937;
+            line-height: 1.5;
+        }
+
+        .app-header {
+            background: white;
+            padding: max(env(safe-area-inset-top), 12px) 16px 12px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .app-title {
+            font-size: 1.5rem;
+            font-weight: 400;
+            color: #1f2937;
+        }
+
+        .app-title span {
+            color: #2563eb;
+            font-weight: 600;
+        }
+
+        .header-date {
+            font-size: 0.875rem;
+            color: #6b7280;
+            font-family: 'Courier New', monospace;
+        }
+
+        .stats-bar {
+            background: #2563eb;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            padding: 12px 8px;
+            gap: 8px;
+            margin: -12px -16px 0;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 0.7rem;
+            color: rgba(255,255,255,0.8);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .stat-value {
+            font-size: 1.25rem;
+            color: white;
+            font-weight: 600;
+            font-family: 'Courier New', monospace;
+        }
+
+        .tabs {
+            display: flex;
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            overflow-x: auto;
+        }
+
+        .tab {
+            padding: 16px 20px;
+            font-size: 0.875rem;
+            color: #6b7280;
+            border: none;
+            background: none;
+            cursor: pointer;
+            white-space: nowrap;
+            font-weight: 500;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .tab.active {
+            color: #2563eb;
+            border-bottom-color: #2563eb;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 16px;
+            padding-bottom: 80px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .section {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .section-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #2563eb;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 16px;
+        }
+
+        .input-group {
+            margin-bottom: 16px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin-bottom: 8px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 1rem;
+            background: #f9fafb;
+            transition: all 0.2s;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #2563eb;
+            background: white;
+        }
+
+        .button-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .btn {
+            padding: 14px 20px;
+            border: none;
+            border-radius: 24px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-primary {
+            background: #2563eb;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #e5e7eb;
+            color: #1f2937;
+        }
+
+        .btn-outline {
+            background: white;
+            color: #2563eb;
+            border: 2px solid #2563eb;
+        }
+
+        .shoe-card {
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .shoe-card-header {
+            background: #eff6ff;
+            padding: 12px 16px;
+            font-weight: 600;
+            color: #1e40af;
+            font-size: 0.95rem;
+        }
+
+        .size-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            padding: 16px;
+            background: #f9fafb;
+        }
+
+        .size-cell {
+            text-align: center;
+        }
+
+        .size-cell.disabled {
+            opacity: 0.3;
+        }
+
+        .size-label {
+            font-size: 0.8rem;
+            color: #6b7280;
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+
+        .size-input {
+            width: 100%;
+            padding: 10px 6px;
+            text-align: center;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            font-family: 'Courier New', monospace;
+            background: white;
+            transition: all 0.2s;
+        }
+
+        .size-input:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .size-input.low-stock {
+            border-color: #ef4444;
+            background: #fef2f2;
+        }
+
+        .size-badge {
+            margin-top: 4px;
+            padding: 2px 6px;
+            border-radius: 6px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge-ok {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .badge-low {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .badge-na {
+            background: #f3f4f6;
+            color: #9ca3af;
+        }
+
+        .summary-card {
+            background: #eff6ff;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            border-left: 4px solid #2563eb;
+        }
+
+        .summary-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #1e40af;
+            margin-bottom: 12px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            font-size: 0.9rem;
+            border-bottom: 1px solid #dbeafe;
+        }
+
+        .summary-row:last-child {
+            border-bottom: none;
+        }
+
+        .summary-row .label {
+            color: #6b7280;
+        }
+
+        .summary-row .value {
+            font-weight: 600;
+            font-family: 'Courier New', monospace;
+            color: #1f2937;
+        }
+
+        .summary-row .value.primary {
+            color: #2563eb;
+        }
+
+        .summary-row .value.danger {
+            color: #ef4444;
+        }
+
+        .summary-row .value.success {
+            color: #10b981;
+        }
+
+        .share-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .share-btn {
+            padding: 12px;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .share-btn:active {
+            transform: scale(0.95);
+        }
+
+        .share-btn .icon {
+            font-size: 1.5rem;
+        }
+
+        .btn-whatsapp {
+            background: #25D366;
+            color: white;
+        }
+
+        .btn-telegram {
+            background: #0088cc;
+            color: white;
+        }
+
+        .btn-print {
+            background: #6b7280;
+            color: white;
+        }
+
+        .stock-table-wrapper {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            margin: -16px;
+            padding: 16px;
+        }
+
+        .stock-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .stock-table th {
+            background: #f9fafb;
+            padding: 10px 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #6b7280;
+            border-bottom: 2px solid #e5e7eb;
+            white-space: nowrap;
+            text-align: center;
+        }
+
+        .stock-table td {
+            padding: 12px 8px;
+            text-align: center;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .stock-qty {
+            font-size: 1.1rem;
+            font-weight: 600;
+            font-family: 'Courier New', monospace;
+        }
+
+        .stock-qty.low {
+            color: #ef4444;
+        }
+
+        .stock-qty.ok {
+            color: #10b981;
+        }
+
+        .scroll-hint {
+            text-align: center;
+            padding: 8px;
+            font-size: 0.75rem;
+            color: #9ca3af;
+            background: #f9fafb;
+            border-radius: 0 0 12px 12px;
+            margin: -16px -16px 0;
+        }
+
+        .alert-info {
+            background: #dbeafe;
+            color: #1e40af;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            margin-bottom: 16px;
+            border-left: 3px solid #2563eb;
+        }
+
+        @media print {
+            .app-header,
+            .stats-bar,
+            .tabs,
+            .button-group,
+            .share-grid,
+            .btn {
+                display: none !important;
+            }
+
+            .tab-content {
+                display: block !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-header">
+        <div class="header-top">
+            <h1 class="app-title">SR <span>Shoes</span> <span style="color: #6b7280; font-weight: 400; font-size: 1rem;">Inventory</span></h1>
+            <div class="header-date" id="headerDate">Fri, 27 Mar</div>
+        </div>
+        <div class="stats-bar">
+            <div class="stat-item">
+                <div class="stat-label">Items</div>
+                <div class="stat-value" id="totalItems">0</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Stock</div>
+                <div class="stat-value" id="totalStock">0</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Reorder</div>
+                <div class="stat-value" id="reorderCount">0</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="tabs">
+        <button class="tab active" onclick="switchTab('audit')">AUDIT</button>
+        <button class="tab" onclick="switchTab('stock')">STOCK SHEET</button>
+        <button class="tab" onclick="switchTab('reorder')">REORDER</button>
+    </div>
+
+    <!-- AUDIT TAB -->
+    <div id="audit-tab" class="tab-content active">
+        <div class="section">
+            <div class="input-group">
+                <label>Employee Name</label>
+                <input type="text" id="employeeName" placeholder="Enter your name">
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-primary" onclick="switchTab('stock')">📊 View Stock</button>
+                <button class="btn btn-primary" onclick="switchTab('reorder')">📋 Reorder</button>
+            </div>
+            <button class="btn btn-secondary" onclick="resetAll()" style="width: 100%;">🔄 Clear All</button>
+        </div>
+
+        <div class="shoe-card">
+            <div class="shoe-card-header">🥾 GOLA (Black)</div>
+            <div class="size-grid" id="gola-black"></div>
+        </div>
+
+        <div class="shoe-card">
+            <div class="shoe-card-header">🥾 GOLA (White)</div>
+            <div class="size-grid" id="gola-white"></div>
+        </div>
+
+        <div class="shoe-card">
+            <div class="shoe-card-header">🥾 CANDY (Black)</div>
+            <div class="size-grid" id="candy-black"></div>
+        </div>
+
+        <div class="shoe-card">
+            <div class="shoe-card-header">🥾 DERBY (Black)</div>
+            <div class="size-grid" id="derby-black"></div>
+        </div>
+
+        <div class="shoe-card">
+            <div class="shoe-card-header">🥾 PT (White)</div>
+            <div class="size-grid" id="pt-white"></div>
+        </div>
+    </div>
+
+    <!-- STOCK SHEET TAB -->
+    <div id="stock-tab" class="tab-content">
+        <div id="stockContent"></div>
+    </div>
+
+    <!-- REORDER TAB -->
+    <div id="reorder-tab" class="tab-content">
+        <div id="reorderContent"></div>
+    </div>
+
+    <script>
+        const allSizes = ['7C', '8C', '9C', '10C', '11C', '12C', '13C', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
+        
+        const shoes = [
+            { id: 'gola-black', name: 'GOLA (Black)', sizes: allSizes },
+            { id: 'gola-white', name: 'GOLA (White)', sizes: allSizes },
+            { id: 'candy-black', name: 'CANDY (Black)', sizes: ['9C', '10C', '11C', '12C', '13C', '1', '2', '3', '4', '5', '6', '7', '8'] },
+            { id: 'derby-black', name: 'DERBY (Black)', sizes: allSizes },
+            { id: 'pt-white', name: 'PT (White)', sizes: allSizes }
+        ];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeGrid();
+            updateHeaderDate();
+        });
+
+        function updateHeaderDate() {
+            const date = new Date();
+            const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            document.getElementById('headerDate').textContent = 
+                `${days[date.getDay()]}, ${date.getDate()} ${months[date.getMonth()]}`;
+        }
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            
+            if (tab === 'audit') {
+                document.querySelectorAll('.tab')[0].classList.add('active');
+                document.getElementById('audit-tab').classList.add('active');
+            } else if (tab === 'stock') {
+                document.querySelectorAll('.tab')[1].classList.add('active');
+                document.getElementById('stock-tab').classList.add('active');
+                generateStockSheet();
+            } else if (tab === 'reorder') {
+                document.querySelectorAll('.tab')[2].classList.add('active');
+                document.getElementById('reorder-tab').classList.add('active');
+                generateReorderSheet();
+            }
+        }
+
+        function initializeGrid() {
+            shoes.forEach(shoe => {
+                const container = document.getElementById(shoe.id);
+                container.innerHTML = '';
+                
+                allSizes.forEach(size => {
+                    const cell = document.createElement('div');
+                    cell.className = 'size-cell';
+                    
+                    const isAvailable = shoe.sizes.includes(size);
+                    
+                    if (!isAvailable) {
+                        cell.classList.add('disabled');
+                        cell.innerHTML = `
+                            <div class="size-label">${size}</div>
+                            <input type="text" class="size-input" value="—" disabled>
+                            <div class="size-badge badge-na">N/A</div>
+                        `;
+                    } else {
+                        cell.innerHTML = `
+                            <div class="size-label">${size}</div>
+                            <input type="number" 
+                                   class="size-input" 
+                                   id="${shoe.id}-${size}" 
+                                   value="0" 
+                                   min="0"
+                                   inputmode="numeric"
+                                   onfocus="this.select()"
+                                   oninput="updateStatus('${shoe.id}', '${size}')">
+                            <div class="size-badge badge-ok" id="status-${shoe.id}-${size}">OK</div>
+                        `;
+                    }
+                    
+                    container.appendChild(cell);
+                });
+            });
+            
+            updateSummary();
+        }
+
+        function updateStatus(shoeId, size) {
+            const input = document.getElementById(`${shoeId}-${size}`);
+            if (!input) return;
+            
+            const status = document.getElementById(`status-${shoeId}-${size}`);
+            const qty = parseInt(input.value) || 0;
+
+            if (qty < 2) {
+                input.classList.add('low-stock');
+                status.className = 'size-badge badge-low';
+                status.textContent = 'LOW';
+            } else {
+                input.classList.remove('low-stock');
+                status.className = 'size-badge badge-ok';
+                status.textContent = 'OK';
+            }
+            
+            updateSummary();
+        }
+
+        function updateSummary() {
+            let totalItems = 0;
+            let totalStock = 0;
+            let reorderCount = 0;
+
+            shoes.forEach(shoe => {
+                shoe.sizes.forEach(size => {
+                    const input = document.getElementById(`${shoe.id}-${size}`);
+                    if (input) {
+                        const qty = parseInt(input.value) || 0;
+                        totalItems++;
+                        totalStock += qty;
+                        if (qty < 2) reorderCount++;
+                    }
+                });
+            });
+
+            document.getElementById('totalItems').textContent = totalItems;
+            document.getElementById('totalStock').textContent = totalStock;
+            document.getElementById('reorderCount').textContent = reorderCount;
+        }
+
+        function generateStockSheet() {
+            const employeeName = document.getElementById('employeeName').value.trim();
+            
+            if (!employeeName) {
+                document.getElementById('stockContent').innerHTML = `
+                    <div class="alert-info">⚠️ Please enter your name in the AUDIT tab first!</div>
+                `;
+                return;
+            }
+
+            const date = new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+
+            let html = `
+                <div class="section">
+                    <div class="section-title">📊 Stock Summary</div>
+                    <div class="alert-info">
+                        <strong>👤 ${employeeName}</strong> • 📅 ${date}
+                    </div>
+                    <div class="share-grid">
+                        <button class="share-btn btn-print" onclick="window.print()">
+                            <span class="icon">🖨️</span>
+                            <span>Print</span>
+                        </button>
+                        <button class="share-btn btn-whatsapp" onclick="shareStock('whatsapp')">
+                            <span class="icon">💬</span>
+                            <span>WhatsApp</span>
+                        </button>
+                        <button class="share-btn btn-telegram" onclick="shareStock('telegram')">
+                            <span class="icon">✈️</span>
+                            <span>Telegram</span>
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            shoes.forEach(shoe => {
+                html += `
+                    <div class="shoe-card">
+                        <div class="shoe-card-header">📦 ${shoe.name}</div>
+                        <div class="stock-table-wrapper">
+                            <table class="stock-table">
+                                <thead><tr>
+                `;
+                
+                const chunkSize = 5;
+                const items = [];
+                shoe.sizes.forEach(size => {
+                    const input = document.getElementById(`${shoe.id}-${size}`);
+                    if (input) {
+                        items.push({ size, qty: parseInt(input.value) || 0 });
+                    }
+                });
+
+                for (let i = 0; i < items.length; i += chunkSize) {
+                    const chunk = items.slice(i, i + chunkSize);
+                    
+                    if (i > 0) html += `</tr></thead><tbody><tr>`;
+                    
+                    chunk.forEach(item => {
+                        html += `<th>${item.size}</th>`;
+                    });
+                    
+                    html += `</tr></thead><tbody><tr>`;
+                    
+                    chunk.forEach(item => {
+                        const cls = item.qty < 2 ? 'low' : 'ok';
+                        html += `<td><span class="stock-qty ${cls}">${item.qty}</span></td>`;
+                    });
+                }
+                
+                html += `</tr></tbody></table></div><div class="scroll-hint">Swipe to see all sizes →</div></div>`;
+            });
+
+            let totalStock = 0, lowCount = 0;
+            shoes.forEach(shoe => {
+                shoe.sizes.forEach(size => {
+                    const input = document.getElementById(`${shoe.id}-${size}`);
+                    if (input) {
+                        const qty = parseInt(input.value) || 0;
+                        totalStock += qty;
+                        if (qty < 2) lowCount++;
+                    }
+                });
+            });
+
+            html += `
+                <div class="summary-card">
+                    <div class="summary-title">Summary</div>
+                    <div class="summary-row">
+                        <span class="label">Total Stock</span>
+                        <span class="value primary">${totalStock} pairs</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="label">Low Stock Items</span>
+                        <span class="value danger">${lowCount}</span>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('stockContent').innerHTML = html;
+        }
+
+        function generateReorderSheet() {
+            const employeeName = document.getElementById('employeeName').value.trim();
+            
+            if (!employeeName) {
+                document.getElementById('reorderContent').innerHTML = `
+                    <div class="alert-info">⚠️ Please enter your name in the AUDIT tab first!</div>
+                `;
+                return;
+            }
+
+            const reorderItems = [];
+            shoes.forEach(shoe => {
+                shoe.sizes.forEach(size => {
+                    const input = document.getElementById(`${shoe.id}-${size}`);
+                    if (input && parseInt(input.value) < 2) {
+                        reorderItems.push({
+                            shoe: shoe.name,
+                            size,
+                            currentQty: parseInt(input.value) || 0,
+                            orderQty: 3
+                        });
+                    }
+                });
+            });
+
+            if (reorderItems.length === 0) {
+                document.getElementById('reorderContent').innerHTML = `
+                    <div class="summary-card" style="background: #d1fae5; border-left-color: #10b981;">
+                        <div class="summary-title" style="color: #065f46;">✅ All Stock OK</div>
+                        <p style="color: #065f46;">No items need reordering!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const grouped = {};
+            reorderItems.forEach(item => {
+                if (!grouped[item.shoe]) grouped[item.shoe] = [];
+                grouped[item.shoe].push(item);
+            });
+
+            const date = new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+
+            let html = `
+                <div class="section">
+                    <div class="section-title">📋 Reorder Sheet</div>
+                    <div class="alert-info">
+                        <strong>👤 ${employeeName}</strong> • 📅 ${date}
+                    </div>
+                    <div class="share-grid">
+                        <button class="share-btn btn-print" onclick="window.print()">
+                            <span class="icon">🖨️</span>
+                            <span>Print</span>
+                        </button>
+                        <button class="share-btn btn-whatsapp" onclick="shareReorder('whatsapp')">
+                            <span class="icon">💬</span>
+                            <span>WhatsApp</span>
+                        </button>
+                        <button class="share-btn btn-telegram" onclick="shareReorder('telegram')">
+                            <span class="icon">✈️</span>
+                            <span>Telegram</span>
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            for (const [shoeName, items] of Object.entries(grouped)) {
+                html += `
+                    <div class="shoe-card">
+                        <div class="shoe-card-header">📦 ${shoeName}</div>
+                        <div class="stock-table-wrapper">
+                            <table class="stock-table">
+                                <thead><tr>
+                `;
+                
+                const chunkSize = 5;
+                for (let i = 0; i < items.length; i += chunkSize) {
+                    const chunk = items.slice(i, i + chunkSize);
+                    
+                    if (i > 0) html += `</tr></thead><tbody><tr>`;
+                    
+                    chunk.forEach(item => html += `<th>${item.size}</th>`);
+                    html += `</tr></thead><tbody><tr>`;
+                    chunk.forEach(item => {
+                        html += `<td><span class="stock-qty success">${item.orderQty} pairs</span></td>`;
+                    });
+                }
+                
+                html += `</tr></tbody></table></div><div class="scroll-hint">Swipe to see all sizes →</div></div>`;
+            }
+
+            html += `
+                <div class="summary-card">
+                    <div class="summary-title">Summary</div>
+                    <div class="summary-row">
+                        <span class="label">Total Items</span>
+                        <span class="value primary">${reorderItems.length}</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="label">Total Pairs</span>
+                        <span class="value success">${reorderItems.length * 3}</span>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('reorderContent').innerHTML = html;
+        }
+
+        function resetAll() {
+            if (confirm('Clear all stock data?')) {
+                document.querySelectorAll('input[type="number"]').forEach(input => {
+                    input.value = 0;
+                    input.dispatchEvent(new Event('input'));
+                });
+                updateSummary();
+                switchTab('audit');
+            }
+        }
+
+        function shareStock(platform) {
+            const employeeName = document.getElementById('employeeName').value.trim();
+            let message = platform === 'whatsapp' ? '📊 *Stock Summary*\n\n' : '📊 Stock Summary\n\n';
+            message += `👤 ${employeeName}\n📅 ${new Date().toLocaleDateString('en-IN')}\n\n`;
+            
+            shoes.forEach(shoe => {
+                message += platform === 'whatsapp' ? `📦 *${shoe.name}*\n` : `📦 ${shoe.name}\n`;
+                shoe.sizes.forEach(size => {
+                    const input = document.getElementById(`${shoe.id}-${size}`);
+                    if (input) {
+                        const qty = parseInt(input.value) || 0;
+                        message += `   ${size}: ${qty} pairs\n`;
+                    }
+                });
+                message += '\n';
+            });
+
+            const url = platform === 'whatsapp' ? 
+                `https://wa.me/?text=${encodeURIComponent(message)}` :
+                `https://t.me/share/url?text=${encodeURIComponent(message)}`;
+            
+            window.open(url, '_blank');
+        }
+
+        function shareReorder(platform) {
+            const employeeName = document.getElementById('employeeName').value.trim();
+            let message = platform === 'whatsapp' ? '📋 *Reorder Sheet*\n\n' : '📋 Reorder Sheet\n\n';
+            message += `👤 ${employeeName}\n📅 ${new Date().toLocaleDateString('en-IN')}\n\n`;
+            
+            const grouped = {};
+            shoes.forEach(shoe => {
+                shoe.sizes.forEach(size => {
+                    const input = document.getElementById(`${shoe.id}-${size}`);
+                    if (input && parseInt(input.value) < 2) {
+                        if (!grouped[shoe.name]) grouped[shoe.name] = [];
+                        grouped[shoe.name].push({ size, orderQty: 3 });
+                    }
+                });
+            });
+
+            for (const [shoeName, items] of Object.entries(grouped)) {
+                message += platform === 'whatsapp' ? `📦 *${shoeName}*\n` : `📦 ${shoeName}\n`;
+                items.forEach(item => message += `   ${item.size} - ${item.orderQty} pairs\n`);
+                message += '\n';
+            }
+
+            const total = Object.values(grouped).flat().length;
+            message += `📊 Total: ${total} items, ${total * 3} pairs`;
+
+            const url = platform === 'whatsapp' ? 
+                `https://wa.me/?text=${encodeURIComponent(message)}` :
+                `https://t.me/share/url?text=${encodeURIComponent(message)}`;
+            
+            window.open(url, '_blank');
+        }
+    </script>
+</body>
+</html>
